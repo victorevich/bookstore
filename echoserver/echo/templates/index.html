@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block content %}
+{% csrf_token %}
+
+<div style="margin-bottom: 10px;">
+    {% if isAuth %}
+        <a href="{% url 'logout' %}">
+            <button type="button" class="btn btn-logout">Log out</button>
+        </a>
+        <a href="{% url 'edit_user' %}">
+            <button type="button" class="btn btn-user_edit">User settings</button>
+        </a>
+        <a href="{% url 'cart' %}">
+            <button type="button" class="btn btn-cart">Cart</button>
+        </a>
+        <a href="{% url 'orders' %}">
+            <button type="button" class="btn btn-orders">Order List</button>
+        </a>
+    {% else %}
+        <a href="{% url 'login' %}">
+            <button type="button" class="btn btn-login">Login</button>
+        </a>
+    {% endif %}
+</div>
+
+{% if isAuth and role %}
+    <div><a href="{% url 'create' %}">
+        <button type="button" class="btn btn-create">
+            Add new
+        </button>
+    </a></div>
+{% endif %}
+
+
+<h1>Список книг</h1>
+<table class="table table-bordered">
+    <tr>
+        <td>Name</td>
+        <td>Author</td>
+        <td>Price</td>
+    </tr>
+    {% for book in DataPaginated %}
+    <tr>
+        <td>{{book.name}}</td>
+        <td>{{book.author}}</td>
+        <td>{{book.price}}</td>
+		{% if isAuth %}
+			{% if role == "admin" %}
+				<td><a href="{%url 'edit_book' book.pk %}">
+					<button type=button class="btn btn-edit">edit</button>
+				</a></td>
+				<td><a href="{%url 'delete_book' book.pk %}">
+					<button type=button class="btn btn-delete">delete</button>
+				</a></td>
+			{% endif %}
+			{% if book.amount %}
+				<td><a href="{%url 'add_to_cart' book.pk %}">
+					<button type=button class="btn btn-delete">add to cart</button>
+				</a></td>
+			{% endif %}
+		{% endif %}
+    </tr>
+    {% endfor %}
+</table>
+
+{% block pagination %}
+	<div class="pagination">
+		<span class="page-links">
+			{% if DataPaginated.has_previous %}
+			<a href="?page=1&param={{param}}">&laquo; first</a>
+			<a href="?page={{DataPaginated.previous_page_number}}&param={{param}}">previous</a>
+			{% endif %}
+			<span class="page-current">
+				Page {{ DataPaginated.number }} of {{ DataPaginated.paginator.num_pages }}.
+			</span>
+			{% if DataPaginated.has_next %}
+			<a href="?page={{DataPaginated.next_page_number}}&param={{param}}">next</a>
+			<a href="?page={{DataPaginated.paginator.num_pages}}&param={{param}}">last &raquo;</a>
+			{% endif %}
+		</span>
+	</div>
+{% endblock %}
+
+<form method="GET">
+    <select name="paginate_by">
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="40">40</option>
+    </select>
+    <input type="submit" value="Paginate">
+</form>
+
+<form method="GET">
+	<select name="sort_by">
+		<option value="name">Sort by name</option>
+		<option value="author">Sort by author</option>
+		<option value="price">Sort by price</option>
+	</select>
+	<input type="submit" value="Sort">
+</form>
+
+{% endblock %}

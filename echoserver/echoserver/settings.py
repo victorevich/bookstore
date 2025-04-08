@@ -26,7 +26,9 @@ SECRET_KEY = 'django-insecure-p5bl%*7f(+$yj$hhfd&n0h6r5f=j%7jw7ump!0%z4c(8$$0rq3
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+SESSION_COOKIE_AGE = 1209600  # Время жизни сессии в секундах (по умолчанию: 2 недели)
+SESSION_SAVE_EVERY_REQUEST = True  # Обновлять сессию при каждом запросе
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Не закрывать сессию при закрытии браузера
 AUTH_USER_MODEL = 'echo.User'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'

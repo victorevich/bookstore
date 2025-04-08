@@ -1,17 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Bookstore{% endblock %}</title>
+    <title>{% block title %}Книжный магазин{% endblock %}</title>
 </head>
 <body>
     <header>
-        <h1>Bookstore</h1>
+        <h1>Книжный магазин</h1>
         <nav>
+            <a href="{% url 'book_list' %}">Главная</a>
+
             {% if user.is_authenticated %}
                 <p>Вы вошли как {{ user.username }}</p>
-                <a href="{% url 'book_new' %}">Добавить книгу</a>
+                <a href="{% url 'profile' %}">Личный кабинет</a>
+                <a href="{% url 'view_cart' %}">Корзина</a>
+                <a href="{% url 'order_list' %}">Мои заказы</a>
+                {% if user.role == 'admin' %}
+                    <a href="{% url 'book_new' %}">Добавить книгу</a>
+                {% endif %}
                 <a href="{% url 'logout' %}">Выйти</a>
             {% else %}
                 <a href="{% url 'login' %}">Войти</a>
@@ -22,5 +29,10 @@
     <main>
         {% block content %}{% endblock %}
     </main>
+
+    <!-- Подключение Bootstrap JS (необходимо для некоторых компонентов) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Books, User
+from .models import Books, User, Order
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 class BookForm(forms.ModelForm):
     class Meta:
@@ -14,7 +14,23 @@ class RegisterForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2']
 
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name')
+
 class LoginForm(AuthenticationForm):
     class Meta:
         model = User
         fields = ['username', 'password']
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = '__all__'
+
