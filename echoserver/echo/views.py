@@ -5,8 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
-from django.db.models import Sum
-from django.utils import timezone
 from django.core.paginator import Paginator
 
 from .models import Books, User, Order, Cart, OrderItem
