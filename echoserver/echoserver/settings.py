@@ -34,7 +34,6 @@ SESSION_COOKIE_SECURE = True  # Для разработки на HTTP
 CSRF_COOKIE_SECURE = True    # Для разработки на HTTP
 AUTH_USER_MODEL = 'echo.User'
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home'
 SESSION_SAVE_EVERY_REQUEST = True  # Обновлять сессию при каждом запросе
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Не закрывать сессию при закрытии браузера
 
@@ -97,25 +96,11 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
 ]
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.Argon2PasswordHasher',
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
 ]
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -128,7 +113,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'

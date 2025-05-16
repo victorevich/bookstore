@@ -2,10 +2,10 @@ $(document).ready(function() {
     // Валидация email
     $('#id_email').on('input', function() {
         const email = $(this).val();
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-        if (!emailRegex.test(email)) {
-            $('#email-help').text('Пожалуйста, введите корректный email адрес');
+        if (email && !emailRegex.test(email)) {
+            $('#email-help').text('Введите корректный email (пример: user@example.com)');
             return false;
         } else {
             $('#email-help').text('');
@@ -16,8 +16,9 @@ $(document).ready(function() {
     // Валидация длины пароля
     $('#id_password1').on('input', function() {
         const password = $(this).val();
+        const isValid = password.length >= 6;
 
-        if (password.length < 6) {
+        if (password && !isValid) {
             $('#password1-help').text('Пароль должен содержать не менее 6 символов');
             return false;
         } else {
@@ -30,8 +31,9 @@ $(document).ready(function() {
     $('#id_password2').on('input', function() {
         const password1 = $('#id_password1').val();
         const password2 = $(this).val();
+        const isValid = password1 === password2;
 
-        if (password1 !== password2) {
+        if (password2 && !isValid) {
             $('#password2-help').text('Пароли не совпадают');
             return false;
         } else {
@@ -69,18 +71,13 @@ $(document).ready(function() {
     $('#reg-form').on('submit', function(e) {
         let isValid = true;
 
-        // Проверка email
-        if (!$('#id_email').trigger('input')) {
-            isValid = false;
-        }
+        // Триггерим события ввода для всех полей
+        $('#id_email').trigger('input');
+        $('#id_password1').trigger('input');
+        $('#id_password2').trigger('input');
 
-        // Проверка пароля
-        if (!$('#id_password1').trigger('input')) {
-            isValid = false;
-        }
-
-        // Проверка совпадения паролей
-        if (!$('#id_password2').trigger('input')) {
+        // Проверяем наличие сообщений об ошибках
+        if ($('.text-danger').text().trim() !== '') {
             isValid = false;
         }
 

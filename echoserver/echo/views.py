@@ -20,8 +20,9 @@ def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('logform')
+            user = form.save()
+            login(request, user)
+            return redirect('book_list')
     form = RegisterForm()
     return render(request, 'register.html', {'form': form})
 
@@ -47,8 +48,6 @@ def check_passwordlen(request):
     }
     return JsonResponse(data)
 
-def logform(request):
-    return render(request, 'login.html')
 
 @login_required
 def add_to_cart(request, pk):
@@ -199,17 +198,6 @@ def book_delete(request, pk):
     return redirect('book_list')
 
 
-def register(request):
-    if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('logform')
-    form = RegisterForm()
-    return render(request, 'register.html', {'form': form})
-
-def logform(request):
-    return render(request, 'login.html')
 
 @csrf_protect
 def login_view(request):
