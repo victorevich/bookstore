@@ -1,0 +1,89 @@
+$(document).ready(function() {
+    // Валидация email
+    $('#id_email').on('input', function() {
+        const email = $(this).val();
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (email && !emailRegex.test(email)) {
+            $('#email-help').text('Введите корректный email (пример: user@example.com)');
+            return false;
+        } else {
+            $('#email-help').text('');
+            return true;
+        }
+    });
+
+    // Валидация длины пароля
+    $('#id_password1').on('input', function() {
+        const password = $(this).val();
+        const isValid = password.length >= 6;
+
+        if (password && !isValid) {
+            $('#password1-help').text('Пароль должен содержать не менее 6 символов');
+            return false;
+        } else {
+            $('#password1-help').text('');
+            return true;
+        }
+    });
+
+    // Проверка совпадения паролей
+    $('#id_password2').on('input', function() {
+        const password1 = $('#id_password1').val();
+        const password2 = $(this).val();
+        const isValid = password1 === password2;
+
+        if (password2 && !isValid) {
+            $('#password2-help').text('Пароли не совпадают');
+            return false;
+        } else {
+            $('#password2-help').text('');
+            return true;
+        }
+    });
+
+    // AJAX проверка уникальности username
+    $('#id_username').on('input', function() {
+        const username = $(this).val();
+
+        if (username.length < 3) {
+            $('#username-help').text('Имя пользователя должно содержать не менее 3 символов');
+            return false;
+        }
+
+        $.ajax({
+            url: '/check_login/',
+            data: {
+                'username': username
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data.is_taken) {
+                    $('#username-help').text('Это имя пользователя уже занято');
+                } else {
+                    $('#username-help').text('');
+                }
+            }
+        });
+    });
+
+    // Проверка всей формы перед отправкой
+    $('#reg-form').on('submit', function(e) {
+        let isValid = true;
+
+        // Триггерим события ввода для всех полей
+        $('#id_email').trigger('input');
+        $('#id_password1').trigger('input');
+        $('#id_password2').trigger('input');
+
+        // Проверяем наличие сообщений об ошибках
+        if ($('.text-danger').text().trim() !== '') {
+            isValid = false;
+        }
+
+        // Если форма не валидна, предотвращаем отправку
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+});

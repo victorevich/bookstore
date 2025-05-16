@@ -25,13 +25,17 @@ SECRET_KEY = 'django-insecure-p5bl%*7f(+$yj$hhfd&n0h6r5f=j%7jw7ump!0%z4c(8$$0rq3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 ALLOWED_HOSTS = []
-
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Или 'django.contrib.sessions.backends.cache' для кэша
+SESSION_COOKIE_NAME = 'bookstore_session'  # Кастомное имя куки
+SESSION_COOKIE_AGE = 3600 * 24 * 7  # 1 неделя в секундах
+SESSION_COOKIE_SECURE = True  # Для разработки на HTTP
+CSRF_COOKIE_SECURE = True    # Для разработки на HTTP
 AUTH_USER_MODEL = 'echo.User'
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
-
+SESSION_SAVE_EVERY_REQUEST = True  # Обновлять сессию при каждом запросе
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Не закрывать сессию при закрытии браузера
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -40,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'widget_tweaks',
     'echo',
 ]
 
@@ -91,21 +96,12 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
 ]
 
-
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+]
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -117,13 +113,15 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
+# https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'echo/templates/static'),  # Указываем правильный путь
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+LOGOUT_REDIRECT_URL = '/'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

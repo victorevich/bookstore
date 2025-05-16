@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<form method="post" novalidate>
+	{% csrf_token %}
+	<div>Order book:</div>
+	<div>{{ book.name }}</div>
+	<div>{{ book.author }}</div>
+	<div>{{ book.price }}</div>
+	<div>Current amount: {{ book.amount }}</div>
+	<label for="password">Amount:</label>
+	<input type="number" id="amount" name="amount" min="1" max="{{ book.amount }}">
+
+	<button type="submit" class="btn btn-primary">Add to cart</button>
+</form>
+
+{% endblock %}

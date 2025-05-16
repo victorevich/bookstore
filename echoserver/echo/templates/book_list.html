@@ -1,37 +1,39 @@
 {% extends 'base.html' %}
 
-{% block title %}Book List{% endblock %}
-
 {% block content %}
-    <h1>Book List</h1>
-    <ul>
-        {% for book in books %}
-            <li>
-                {{ book.title }} by {{ book.author }} - {{ book.price }}
-                <a href="{% url 'book_detail' book.pk %}">View</a>
-                {% if user.is_authenticated and user.role == 'admin' or user.is_superuser%}
-                    <a href="{% url 'book_edit' book.pk %}">Edit</a>
-                <a href="{% url 'book_delete' book.pk %}">Delete</a>
-                {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
+<h2>Каталог книг</h2>
 
-    <div class="pagination">
-        <span class="step-links">
-            {% if books.has_previous %}
-                <a href="?page=1">&laquo; первая</a>
-                <a href="?page={{ books.previous_page_number }}">предыдущая</a>
-            {% endif %}
-
-            <span class="current">
-                Страница {{ books.number }} из {{ books.paginator.num_pages }}.
-            </span>
-
-            {% if books.has_next %}
-                <a href="?page={{ books.next_page_number }}">следующая</a>
-                <a href="?page={{ books.paginator.num_pages }}">последняя &raquo;</a>
-            {% endif %}
-        </span>
+<form method="get" action="{% url 'book_list' %}">
+    <div>
+        <label for="author-filter">Автор:</label>
+        <input type="text" id="author-filter" name="author" value="{{ request.GET.author }}" placeholder="Фильтр по автору">
     </div>
+
+    <div>
+        <label for="price-min">Цена от:</label>
+        <input type="number" id="price-min" name="price_min" value="{{ request.GET.price_min }}" placeholder="Минимальная цена">
+
+        <label for="price-max">до:</label>
+        <input type="number" id="price-max" name="price_max" value="{{ request.GET.price_max }}" placeholder="Максимальная цена">
+    </div>
+
+    <button type="submit">Применить фильтры</button>
+    <a href="{% url 'book_list' %}">Сбросить</a>
+</form>
+
+<div class="row">
+    {% for book in books %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ book.title }}</h5>
+                <p class="card-text">{{ book.author }}</p>
+                <p class="card-text">{{ book.price }} руб.</p>
+                <a href="{% url 'book_detail' book.pk %}" class="btn btn-primary">Подробнее</a>
+                <a href="{% url 'add_to_cart' book.pk %}" class="btn btn-success">В корзину</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}
