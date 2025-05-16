@@ -16,7 +16,7 @@
         <tr>
             <td>#{{ order.id }}</td>
             <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
-            <td>{{ order.total_price }} руб.</td>
+            <td>{{ order.total_price }} руб</td>
             <td>
                 <a href="{% url 'order_detail' order.pk %}" class="btn btn-info">Подробнее</a>
             </td>

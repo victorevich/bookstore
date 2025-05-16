@@ -1,0 +1,92 @@
+$(document).ready(function() {
+    // Валидация email
+    $('#id_email').on('input', function() {
+        const email = $(this).val();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email)) {
+            $('#email-help').text('Пожалуйста, введите корректный email адрес');
+            return false;
+        } else {
+            $('#email-help').text('');
+            return true;
+        }
+    });
+
+    // Валидация длины пароля
+    $('#id_password1').on('input', function() {
+        const password = $(this).val();
+
+        if (password.length < 6) {
+            $('#password1-help').text('Пароль должен содержать не менее 6 символов');
+            return false;
+        } else {
+            $('#password1-help').text('');
+            return true;
+        }
+    });
+
+    // Проверка совпадения паролей
+    $('#id_password2').on('input', function() {
+        const password1 = $('#id_password1').val();
+        const password2 = $(this).val();
+
+        if (password1 !== password2) {
+            $('#password2-help').text('Пароли не совпадают');
+            return false;
+        } else {
+            $('#password2-help').text('');
+            return true;
+        }
+    });
+
+    // AJAX проверка уникальности username
+    $('#id_username').on('input', function() {
+        const username = $(this).val();
+
+        if (username.length < 3) {
+            $('#username-help').text('Имя пользователя должно содержать не менее 3 символов');
+            return false;
+        }
+
+        $.ajax({
+            url: '/check_login/',
+            data: {
+                'username': username
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data.is_taken) {
+                    $('#username-help').text('Это имя пользователя уже занято');
+                } else {
+                    $('#username-help').text('');
+                }
+            }
+        });
+    });
+
+    // Проверка всей формы перед отправкой
+    $('#reg-form').on('submit', function(e) {
+        let isValid = true;
+
+        // Проверка email
+        if (!$('#id_email').trigger('input')) {
+            isValid = false;
+        }
+
+        // Проверка пароля
+        if (!$('#id_password1').trigger('input')) {
+            isValid = false;
+        }
+
+        // Проверка совпадения паролей
+        if (!$('#id_password2').trigger('input')) {
+            isValid = false;
+        }
+
+        // Если форма не валидна, предотвращаем отправку
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+});

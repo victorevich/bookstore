@@ -1,10 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% for book in books %}
+<div class="col-md-4 mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ book.title }}</h5>
+            <p class="card-text">{{ book.author }}</p>
+            <p class="card-text">{{ book.price }} руб.</p>
+            <a href="{% url 'book_detail' book.pk %}" class="btn btn-primary">Подробнее</a>
+            <a href="{% url 'add_to_cart' book.id %}" class="btn btn-primary">
+                В корзину
+            </a>
+
+            <form action="{% url 'buy_now' book.id %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success ms-2">Купить</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.hashers import make_password
+from django.contrib.sessions.models import Session
 class Books(models.Model):
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=255)
@@ -19,14 +19,27 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
+
     def save(self, *args, **kwargs):
-        self.password = make_password(self.password)
-        super(User, self).save(*args, **kwargs)
+        # Получаем старый username перед сохранением
+        if self.pk:
+            old_user = User.objects.get(pk=self.pk)
+            if old_user.username != self.username:
+                # Удаляем все сессии пользователя
+                Session.objects.filter(session_data__contains=old_user.username).delete()
+        super().save(*args, **kwargs)
     def __str__(self):
         return self.username
     class Meta:
         db_table = 'User'
 
+    @property
+    def cart_items(self):
+        return self.cart_set.select_related('book')
+
+    @property
+    def cart_total(self):
+        return sum(item.total_price for item in self.cart_items)
 
 class Cart(models.Model):
     user = models.ForeignKey(User, verbose_name='Пользователь', on_delete=models.CASCADE)
@@ -34,6 +47,19 @@ class Cart(models.Model):
     quantity = models.PositiveIntegerField('Количество', default=1)
     created_at = models.DateTimeField('Дата добавления', auto_now_add=True)
 
+    def increase_quantity(self):
+        self.quantity += 1
+        self.save()
+
+    def decrease_quantity(self):
+        if self.quantity > 1:
+            self.quantity -= 1
+            self.save()
+        else:
+            self.delete()
+    @property
+    def total_price(self):
+        return float(self.book.price) * self.quantity
     def __str__(self):
         return f"Корзина {self.user.username} - {self.book.title}"
 
@@ -65,7 +91,7 @@ class OrderItem(models.Model):
     price = models.DecimalField('Цена', max_digits=10, decimal_places=2)
 
     def get_total_item_price(self):
-        return self.price * self.quantity
+        return float(self.price) * self.quantity
     def __str__(self):
         return f"{self.book.title} в заказе #{self.order.id}"
 
